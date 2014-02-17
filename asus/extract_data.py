@@ -17,22 +17,44 @@ for entry in t2.values:
         dict_sales[key] = [entry[-1],entry[0],entry[1],entry[2]]
 
 error_count = 0
-data = []
+dict_repair = {}
 for entry in t1.values:
     key = reduce(lambda x, y: str(x)+str(y),entry[:3])
     if key in dict_sales:
         timespan = datetime.strptime(entry[3],'%Y/%m') - datetime.strptime(dict_sales[key][-1],'%Y/%m')
-        print timespan.days
-        data.append([dict_sales[key],entry[-1],])
+        repair_key = key + entry[3]
+        sales = dict_sales[key][0]
+        if repair_key not in dict_repair:
+            dict_repair[repair_key] = [entry[-1],timespan.days,entry[0],entry[1],entry[2],entry[3],sales]
+        else:
+            dict_repair[repair_key][0] += entry[-1]
     else:
        error_count += 1
-#print dict_sales
-#print error_count
-#TODO: use util to create categories
-print(t1.ix[0:5,:])
-print(t2.ix[0:5,:])
 
-#print(dict_sales)
+data = []
+for value in dict_repair.values():
+    data.append([ele for ele in value])
+
+X =  np.array(data)
+X = X[:,[0,1,2,3,6]]
+
+fac1 = u.strings_to_classes(X[:,2])
+fac2 = u.strings_to_classes(X[:,3])
+
+t1 = u.create_t_matrix(fac1)
+t2 = u.create_t_matrix(fac2)
+
+X = np.hstack([np.float32(X[:,[0,1,4]]),t1,t2])
+print X.shape
+
+np.save('/home/tim/Downloads/repair/train.npy',X)
+print 'Saved!'
+
+#TODO: use util to create categories
+#print(t1.ix[0:5,:])
+#print(t2.ix[0:5,:])
+
+#print data
 
 
 

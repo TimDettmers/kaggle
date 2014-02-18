@@ -18,6 +18,7 @@ for entry in t2.values:
 
 error_count = 0
 dict_repair = {}
+
 for entry in t1.values:
     key = reduce(lambda x, y: str(x)+str(y),entry[:3])
     if key in dict_sales:
